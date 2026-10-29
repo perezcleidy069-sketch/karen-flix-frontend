@@ -1,0 +1,65 @@
+{
+    "categories": ["Anime", "Ciencia Ficción", "Superhéroes", "Fantasía"],
+    "mediaItems": [
+      {
+        "id": "1",
+        "title": "Cyberpunk: Edgerunners Season 2",
+        "category": "Anime",
+        "year": 2026,
+        "description": "Obra cumbre del cine expresionista de ciencia ficción en dominio público. Presenta una visión distópica de una ciudad futurista dividida entre trabajadores e intelectuales.",
+        "approved": true,
+        "ratingSum": 48,
+        "ratingCount": 5,
+        "reviews": [
+          {
+            "userName": "Cinephile_99",
+            "rating": 10,
+            "title": "Pionera absoluta del sci-fi",
+            "comment": "Increíble cómo una serie que definió las bases de la ciencia ficción moderna.",
+            "date": "2026-08-15"
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "title": "Superman",
+        "category": "Superhéroes",
+        "year": 2026,
+        "description": "El multimillonario tecnológico Lex Luthor aprovecha la oportunidad para quitarse de en medio definitivamente al Hombre de Acero. ¿Podrán la reportera Lois Lane y el compañero de cuatro patas de Superman, Krypto, ayudarle antes de que sea tarde?",
+        "approved": true,
+        "ratingSum": 45,
+        "ratingCount": 5,
+        "reviews": [
+          {
+            "userName": "GeekCollector",
+            "rating": 9,
+            "title": "HIstoria poetica y llena de sentimientos",
+            "comment": "Los colores y el estilo art decó siguen siendo impecables.",
+            "date": "2026-07-10"
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "title": "Proyecto Salvació",
+        "category": "ciencia ficcion",
+        "year": 2026,
+        "description": "El profesor Ryland Grace despierta en una nave espacial sin recordar quién es. Al recuperar la memoria, descubre que debe resolver el misterio de una sustancia que causa la extinción del Sol. Recurre a su formación científica e ingenio, aunque posiblemente no esté solo.'",
+        "approved": true,
+        "ratingSum": 38,
+        "ratingCount": 5,
+        "reviews": []
+      },
+      {
+        "id": "4",
+        "title": "El día de la revelación",
+        "category": "ciencia ficcion",
+        "year": 2026,
+        "description": "Una presentadora de noticias meteorológicas descubre que puede hablar lo que parece ser un idioma extraño. Al mismo tiempo, un hombre encuentra pruebas robadas del gobierno que prueban la existencia de vida extraterrestre.'",
+        "approved": true,
+        "ratingSum": 40,
+        "ratingCount": 5,
+        "reviews": []
+      }
+    ]
+  }

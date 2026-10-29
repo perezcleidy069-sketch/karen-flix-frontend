@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeekRank - Plataforma Geek de Reseñas y Rankings</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración personalizada de Tailwind -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0c10',
+                        cardBg: '#1f2833',
+                        cardHover: '#2a3644',
+                        goldAccent: '#c5a059',
+                        carmineRed: '#800020',
+                        neonBlue: '#45f3ff',
+                        textMain: '#c5c6c7',
+                        textBright: '#66fcf1'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Orbitron', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Inter & Orbitron -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Estilos CSS Conectados -->
+    <link rel="stylesheet" href="../CSS/styles.css">
+</head>
+<body class="flex flex-col min-h-screen antialiased selection:bg-goldAccent selection:text-black">
+
+    <!-- Top Navigation Bar (Responsive adaptada a móviles y tablets) -->
+    <header class="sticky top-0 z-40 bg-darkBg/95 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer" onclick="navigateTo('home')">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-cardBg border border-goldAccent/50 rounded-xl flex items-center justify-center shadow-lg gold-glow flex-shrink-0">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-goldAccent" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" stroke-dasharray="8 4"/>
+                        <circle cx="50" cy="50" r="28" stroke="#66fcf1" stroke-width="4"/>
+                        <path d="M50 10 L50 90 M10 50 L90 50 M22 22 L78 78 M22 78 L78 22" stroke="currentColor" stroke-width="3" opacity="0.6"/>
+                        <polygon points="50,18 58,38 80,38 62,50 68,72 50,58 32,72 38,50 20,38 42,38" fill="currentColor" opacity="0.9"/>
+                        <circle cx="50" cy="50" r="10" fill="#0b0c10" stroke="#66fcf1" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="font-display font-black text-lg sm:text-2xl tracking-wider text-white">GEEK<span class="text-goldAccent">RANK</span></span>
+                    <p class="text-[9px] sm:text-[10px] text-gray-400 uppercase tracking-widest -mt-1 font-semibold">Cine • Anime • Series</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links (Oculto en móvil pequeño, visible en pantallas medianas en adelante) -->
+            <nav class="hidden md:flex items-center space-x-4 lg:space-x-6 text-xs sm:text-sm font-medium">
+                <button onclick="navigateTo('home')" id="nav-home" class="nav-btn text-textBright flex items-center gap-2 px-3 py-2 rounded-lg transition hover:text-white">
+                    <i class="fa-solid fa-compass"></i> Explorar
+                </button>
+                <button onclick="navigateTo('add-movie')" id="nav-add-movie" class="nav-btn text-gray-400 flex items-center gap-2 px-3 py-2 rounded-lg transition hover:text-white">
+                    <i class="fa-solid fa-plus-circle"></i> Proponer
+                </button>
+                <button onclick="navigateTo('admin')" id="nav-admin" class="nav-btn text-gray-400 flex items-center gap-2 px-3 py-2 rounded-lg transition hover:text-white hidden">
+                    <i class="fa-solid fa-user-shield text-goldAccent"></i> Admin Panel
+                </button>
+                <button onclick="toggleGuideModal()" class="text-gray-400 hover:text-textBright flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-700 hover:border-textBright/50 transition">
+                    <i class="fa-solid fa-book"></i> Guía
+                </button>
+            </nav>
+
+            <!-- User Auth Profile & Mobile Menu Toggle Button -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div id="user-badge" class="hidden sm:flex items-center gap-2 bg-cardBg border border-gray-700 px-3 py-1.5 rounded-full text-xs">
+                    <span id="user-role-pill" class="px-2 py-0.5 rounded text-[10px] font-bold bg-goldAccent text-black uppercase">GUEST</span>
+                    <span id="user-name-display" class="text-gray-200 font-semibold truncate max-w-[100px]">Invitado</span>
+                </div>
+
+                <button id="auth-action-btn" onclick="openAuthModal()" class="bg-gradient-to-r from-goldAccent to-amber-600 hover:from-amber-500 hover:to-goldAccent text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg transition shadow-md flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                    <i class="fa-solid fa-right-to-bracket"></i> <span class="hidden xs:inline">Sesión</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra de navegación inferior móvil para dispositivos compactos (smartphones / consolas portátiles) -->
+        <div class="md:hidden flex items-center justify-around bg-darkBg border-t border-gray-800 px-2 py-2 text-xs">
+            <button onclick="navigateTo('home')" id="nav-home-m" class="text-textBright flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-compass text-sm"></i> <span>Explorar</span>
+            </button>
+            <button onclick="navigateTo('add-movie')" id="nav-add-movie-m" class="text-gray-400 flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-plus-circle text-sm"></i> <span>Proponer</span>
+            </button>
+            <button onclick="navigateTo('admin')" id="nav-admin-m" class="text-gray-400 flex flex-col items-center gap-1 p-1 hidden">
+                <i class="fa-solid fa-user-shield text-goldAccent text-sm"></i> <span>Admin</span>
+            </button>
+            <button onclick="toggleGuideModal()" class="text-gray-400 flex flex-col items-center gap-1 p-1">
+                <i class="fa-solid fa-book text-sm"></i> <span>Guía</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Global Notification Banner -->
+    <div id="notification-banner" class="hidden max-w-7xl mx-auto px-4 mt-4 w-full">
+        <div id="notification-content" class="p-4 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-between border shadow-lg">
+            <span id="notification-message">Mensaje de notificación...</span>
+            <button onclick="closeNotification()" class="text-lg leading-none">&times;</button>
+        </div>
+    </div>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+
+        <!-- ================= VIEW 1: HOME / EXPLORE ================= -->
+        <section id="view-home" class="view-section space-y-6 sm:space-y-8">
+            <!-- Hero / Search Header -->
+            <div class="bg-gradient-to-r from-cardBg via-darkBg to-cardBg border border-gray-800 rounded-2xl sm:rounded-3xl p-5 sm:p-10 relative overflow-hidden shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none hidden sm:block">
+                    <i class="fa-solid fa-dragon text-[240px] text-goldAccent"></i>
+                </div>
+                <div class="max-w-2xl space-y-3 sm:space-y-4 relative z-10">
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-goldAccent bg-goldAccent/10 px-3 py-1 rounded-full border border-goldAccent/20 inline-block">
+                        Comunidad Geek Oficial
+                    </span>
+                    <h1 class="text-2xl sm:text-5xl font-display font-extrabold text-white tracking-tight leading-tight">
+                        Ranking de Cine, Animes & Series Geek
+                    </h1>
+                    <p class="text-gray-400 text-xs sm:text-base">
+                        Vota, reseña y descubre el ranking ponderado real de la comunidad sin censura. Algoritmo protegido anti-spam.
+                    </p>
+
+                    <!-- Search & Filter Controls Responsive -->
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                            <input type="text" id="search-input" onkeyup="filterMedia()" placeholder="Buscar por título o palabra clave..." class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white pl-11 pr-4 py-2.5 sm:py-3 rounded-xl outline-none text-xs sm:text-sm transition">
+                        </div>
+                        <select id="category-filter" onchange="filterMedia()" class="bg-darkBg border border-gray-700 focus:border-textBright text-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl outline-none text-xs sm:text-sm font-medium transition cursor-pointer">
+                            <option value="ALL">Todas las Categorías</option>
+                            <option value="Anime">Anime</option>
+                            <option value="Ciencia Ficción">Ciencia Ficción</option>
+                            <option value="Superhéroes">Superhéroes</option>
+                            <option value="Fantasía">Fantasía</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL 1: Quick Redirect / Panel NAVEGABLE de Obras (Scroll horizontal adaptado táctil) -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-2">
+                    <h3 class="text-sm sm:text-lg font-display font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-film text-neonBlue"></i> Selección Rápida & Cartelera Navegable
+                    </h3>
+                    <span class="text-[10px] sm:text-xs text-gray-400 hidden xs:inline">Toca cualquier título</span>
+                </div>
+                <div id="quick-panel-container" class="flex gap-3 sm:gap-4 overflow-x-auto pb-3 scrollbar-thin">
+                    <!-- Dynamic quick cards loaded via JS -->
+                </div>
+            </div>
+
+            <!-- PANEL 2: Animes y Películas DESTACADAS (Top Rated) -->
+            <div class="bg-cardBg/60 border border-goldAccent/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                    <h3 class="text-sm sm:text-lg font-display font-bold text-goldAccent flex items-center gap-2">
+                        <i class="fa-solid fa-crown text-amber-400"></i> Top Destacados Ponderados
+                    </h3>
+                    <span class="text-[10px] sm:text-xs bg-goldAccent/10 text-goldAccent px-2.5 py-1 rounded-full font-semibold border border-goldAccent/30">Mejor Valorados</span>
+                </div>
+                <div id="top-featured-container" class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                    <!-- Top 3 rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Media Items Grid Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-800 pb-3 sm:pb-4 gap-2">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-base sm:text-xl font-display font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-goldAccent"></i> Cartelera Completa
+                    </h2>
+                    <span id="item-count-badge" class="bg-gray-800 text-textBright text-[10px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-full">0 obras</span>
+                </div>
+                
+                <div class="flex items-center gap-2 text-xs text-gray-400 justify-end">
+                    <span>Ordenar:</span>
+                    <select id="sort-order" onchange="filterMedia()" class="bg-cardBg border border-gray-700 text-white rounded-lg px-2.5 py-1.5 outline-none cursor-pointer text-xs">
+                        <option value="ranking">Ranking Ponderado</option>
+                        <option value="newest">Más Recientes</option>
+                        <option value="rating">Calificación Promedio</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Media Grid (Adaptativo automático 1 col en móvil, 2 en tablets, 3-4 en desktop/laptops) -->
+            <div id="media-grid" class="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Movie Cards Rendered Dynamically -->
+            </div>
+        </section>
+
+        <!-- ================= VIEW 2: MEDIA DETAIL ================= -->
+        <section id="view-detail" class="view-section hidden space-y-6">
+            <button onclick="navigateTo('home')" class="text-gray-400 hover:text-white text-xs sm:text-sm font-medium flex items-center gap-2 transition">
+                <i class="fa-solid fa-arrow-left"></i> Volver a la cartelera
+            </button>
+
+            <!-- Media Header Card (Responsive flex col / row) -->
+            <div id="detail-header-card" class="bg-cardBg border border-gray-800 rounded-2xl sm:rounded-3xl p-4 sm:p-8 flex flex-col md:flex-row gap-6 sm:gap-8 shadow-2xl relative">
+                <!-- Dynamic detail header loaded via JS -->
+            </div>
+
+            <!-- Review Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Submit / Edit Review Form -->
+                <div class="lg:col-span-1 bg-cardBg border border-gray-800 rounded-2xl p-4 sm:p-6 h-fit space-y-4">
+                    <h3 class="text-base sm:text-lg font-display font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-pen-nib text-goldAccent"></i> Tu Reseña
+                    </h3>
+                    <p class="text-[11px] sm:text-xs text-gray-400">Escribe tu opinión y califica de 1 a 10.</p>
+
+                    <form id="review-form" onsubmit="handleReviewSubmit(event)" class="space-y-3 sm:space-y-4">
+                        <div>
+                            <label class="block text-[11px] sm:text-xs font-semibold uppercase text-gray-400 mb-1">Calificación (1 - 10)</label>
+                            <input type="number" id="review-rating" min="1" max="10" step="1" required class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-goldAccent font-bold text-base sm:text-lg px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] sm:text-xs font-semibold uppercase text-gray-400 mb-1">Título de la Reseña</label>
+                            <input type="text" id="review-title" placeholder="Ej: Obra maestra..." required class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] sm:text-xs font-semibold uppercase text-gray-400 mb-1">Comentario</label>
+                            <textarea id="review-comment" rows="3" placeholder="Explica tus argumentos..." required class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white text-xs sm:text-sm p-3 sm:p-4 rounded-xl outline-none resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-goldAccent hover:bg-amber-500 text-black font-bold py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg">
+                            Publicar Reseña
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Reviews List -->
+                <div class="lg:col-span-2 space-y-3 sm:space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <h3 class="text-base sm:text-lg font-display font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-comments text-textBright"></i> Reseñas de la Comunidad
+                        </h3>
+                        <span id="review-count-tag" class="text-xs text-gray-400">0 opiniones</span>
+                    </div>
+
+                    <div id="reviews-container" class="space-y-3">
+                        <!-- Dynamic Review Cards Loaded via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 3: PROPOSE / ADD MOVIE ================= -->
+        <section id="view-add-movie" class="view-section hidden max-w-2xl mx-auto space-y-6">
+            <div class="bg-cardBg border border-gray-800 rounded-2xl sm:rounded-3xl p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl">
+                <div>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-goldAccent">Solicitud de Contenido</span>
+                    <h2 class="text-xl sm:text-2xl font-display font-bold text-white mt-1">Proponer Nueva Película / Serie</h2>
+                    <p class="text-gray-400 text-xs mt-1">Las propuestas ingresan en estado pendiente hasta ser aprobadas por administración.</p>
+                </div>
+
+                <form id="add-media-form" onsubmit="handleAddMedia(event)" class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Título Oficial *</label>
+                        <input type="text" id="media-title" required placeholder="Ej: Steamboat Willie" class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl outline-none text-xs sm:text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Categoría *</label>
+                            <select id="media-category" required class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl outline-none text-xs sm:text-sm">
+                                <option value="Anime">Anime</option>
+                                <option value="Ciencia Ficción">Ciencia Ficción</option>
+                                <option value="Superhéroes">Superhéroes</option>
+                                <option value="Fantasía">Fantasía</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Año de Estreno *</label>
+                            <input type="number" id="media-year" min="1900" max="2030" value="2024" required class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl outline-none text-xs sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">URL de Imagen / Poster (Opcional)</label>
+                        <input type="url" id="media-image" placeholder="https://ejemplo.com/poster.jpg" class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl outline-none text-xs sm:text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Sinopsis / Descripción *</label>
+                        <textarea id="media-description" rows="3" required placeholder="Breve resumen argumental..." class="w-full bg-darkBg border border-gray-700 focus:border-textBright text-white p-3 sm:p-4 rounded-xl outline-none text-xs sm:text-sm resize-none"></textarea>
+                    </div>
+
+                    <div class="pt-2 flex gap-3">
+                        <button type="button" onclick="navigateTo('home')" class="w-1/2 border border-gray-700 hover:bg-gray-800 text-gray-300 font-bold py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-wider transition">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="w-1/2 bg-textBright hover:bg-cyan-300 text-black font-bold py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg">
+                            Enviar Propuesta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 4: ADMIN PANEL ================= -->
+        <section id="view-admin" class="view-section hidden space-y-6 sm:space-y-8">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                <div>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-carmineRed">Panel de Control</span>
+                    <h2 class="text-xl sm:text-2xl font-display font-bold text-white">Administración del Sistema</h2>
+                </div>
+                <div class="flex gap-2">
+                    <span class="bg-goldAccent/10 border border-goldAccent/30 text-goldAccent text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full font-mono">Rol: Admin</span>
+                </div>
+            </div>
+
+            <!-- Admin Tabs Responsive -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Pending Approvals -->
+                <div class="lg:col-span-2 bg-cardBg border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4">
+                    <h3 class="text-sm sm:text-base font-display font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-amber-400"></i> Obras Pendientes de Aprobación
+                    </h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-gray-300 min-w-[400px]">
+                            <thead class="bg-darkBg text-gray-400 uppercase font-mono">
+                                <tr>
+                                    <th class="p-2 sm:p-3">Título</th>
+                                    <th class="p-2 sm:p-3">Categoría</th>
+                                    <th class="p-2 sm:p-3">Año</th>
+                                    <th class="p-2 sm:p-3 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-pending-table" class="divide-y divide-gray-800">
+                                <!-- Pending rows rendered via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Category Management -->
+                <div class="bg-cardBg border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4">
+                    <h3 class="text-sm sm:text-base font-display font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-tags text-textBright"></i> Gestor de Categorías
+                    </h3>
+
+                    <form onsubmit="handleAddCategory(event)" class="flex gap-2">
+                        <input type="text" id="new-category-name" placeholder="Nueva categoría..." required class="flex-grow bg-darkBg border border-gray-700 text-white text-xs px-3 py-2 rounded-lg outline-none">
+                        <button type="submit" class="bg-textBright text-black font-bold px-3 sm:px-4 py-2 rounded-lg text-xs uppercase hover:bg-cyan-300 transition flex-shrink-0">
+                            Añadir
+                        </button>
+                    </form>
+
+                    <div id="admin-categories-list" class="space-y-2 pt-2 flex flex-wrap gap-1.5">
+                        <!-- Category pills rendered via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= AUTHENTICATION MODAL ================= -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="bg-cardBg border border-gray-700 w-full max-w-md rounded-2xl sm:rounded-3xl p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+
+            <!-- Auth Mode Switcher -->
+            <div class="flex border-b border-gray-800">
+                <button id="auth-tab-login" onclick="switchAuthTab('login')" class="w-1/2 pb-3 font-display font-bold text-xs sm:text-sm text-goldAccent border-b-2 border-goldAccent transition">
+                    Iniciar Sesión
+                </button>
+                <button id="auth-tab-register" onclick="switchAuthTab('register')" class="w-1/2 pb-3 font-display font-bold text-xs sm:text-sm text-gray-400 border-b-2 border-transparent transition">
+                    Registrarse
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Correo Electrónico</label>
+                    <input type="email" id="login-email" value="admin@geekrank.com" required class="w-full bg-darkBg border border-gray-700 focus:border-goldAccent text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Contraseña</label>
+                    <input type="password" id="login-password" value="123456" required class="w-full bg-darkBg border border-gray-700 focus:border-goldAccent text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none">
+                </div>
+
+                <!-- Demo Role Selection -->
+                <div class="p-3 bg-darkBg rounded-xl border border-gray-800 space-y-2">
+                    <span class="block text-[11px] font-mono text-goldAccent uppercase">Modo Simulación JWT:</span>
+                    <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="demo-role" value="admin" checked class="text-goldAccent focus:ring-0">
+                            <span class="text-gray-200">Administrador</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="demo-role" value="user" class="text-goldAccent focus:ring-0">
+                            <span class="text-gray-200">Usuario Normal</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-goldAccent hover:bg-amber-500 text-black font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg">
+                    Ingresar con JWT
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Nombre Completo</label>
+                    <input type="text" id="reg-name" required placeholder="Goku Geek" class="w-full bg-darkBg border border-gray-700 focus:border-goldAccent text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Correo Electrónico</label>
+                    <input type="email" id="reg-email" required placeholder="usuario@geekrank.com" class="w-full bg-darkBg border border-gray-700 focus:border-goldAccent text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1">Contraseña</label>
+                    <input type="password" id="reg-password" required placeholder="******" class="w-full bg-darkBg border border-gray-700 focus:border-goldAccent text-white px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm outline-none">
+                </div>
+                <button type="submit" class="w-full bg-textBright hover:bg-cyan-300 text-black font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg">
+                    Crear Cuenta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= SETUP & COMMANDS GUIDE MODAL ================= -->
+    <div id="guide-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="bg-cardBg border border-gray-700 w-full max-w-4xl rounded-2xl sm:rounded-3xl p-5 sm:p-8 space-y-5 sm:space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="toggleGuideModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
+
+            <div class="border-b border-gray-800 pb-3 sm:pb-4">
+                <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-textBright">Guía de Desarrollo Full-Stack</span>
+                <h2 class="text-lg sm:text-2xl font-display font-bold text-white mt-1">Estructura Full-Stack Node.js + Frontend Responsivo</h2>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-gray-300">
+                <div class="space-y-2">
+                    <h3 class="font-bold text-goldAccent text-sm sm:text-base flex items-center gap-2">
+                        <i class="fa-solid fa-terminal"></i> 1. Comandos de Instalación (Backend)
+                    </h3>
+                    <div class="bg-darkBg p-3 sm:p-4 rounded-xl border border-gray-800 font-mono text-[11px] sm:text-xs text-textBright overflow-x-auto">
+                        mkdir geekrank-backend && cd geekrank-backend<br>
+                        npm init -y<br>
+                        npm install express mongodb dotenv express-rate-limit express-validator jsonwebtoken passport passport-jwt bcrypt cors
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript Conectado -->
+    <script src="../app.js"></script>
+</body>
+</html>
